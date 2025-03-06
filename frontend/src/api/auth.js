@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 // const API_URL = 'http://localhost:8000/api/v1/users';
-const API_URL = 'https://advanced-authentication-mern-k759.onrender.com';
+const API_URL =
+    'https://advanced-authentication-mern-k759.onrender.com/api/v1/users';
 
 export const signup = async userData => {
     const response = await axios.post(`${API_URL}/signup`, userData);
