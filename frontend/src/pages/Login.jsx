@@ -9,6 +9,7 @@ function Login() {
         email: '',
         password: ''
     });
+    const [loading, setLoading] = useState(false); // New state for loading
 
     const handleChange = e => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -16,12 +17,16 @@ function Login() {
 
     const handleSubmit = async e => {
         e.preventDefault();
+        setLoading(true); // Disable button and show spinner
+
         try {
             const response = await login(formData);
             toast.success(response.message);
             navigate('/');
         } catch (error) {
             toast.error(error.response?.data?.message || 'Login failed');
+        } finally {
+            setLoading(false); // Re-enable button after request completes
         }
     };
 
@@ -38,6 +43,7 @@ function Login() {
                             type="email"
                             name="email"
                             value={formData.email}
+                            placeholder="Enter your email"
                             onChange={handleChange}
                             className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
                             required
@@ -51,6 +57,7 @@ function Login() {
                             type="password"
                             name="password"
                             value={formData.password}
+                            placeholder="Enter your password"
                             onChange={handleChange}
                             className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
                             required
@@ -58,9 +65,17 @@ function Login() {
                     </div>
                     <button
                         type="submit"
-                        className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600"
+                        className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 cursor-pointer flex items-center justify-center"
+                        disabled={loading} // Disable button when loading
                     >
-                        Login
+                        {loading ? (
+                            <svg
+                                className="animate-spin h-5 w-5 mr-3 border-2 border-white border-t-transparent rounded-full"
+                                viewBox="0 0 24 24"
+                            ></svg>
+                        ) : (
+                            'Login'
+                        )}
                     </button>
                 </form>
                 <div className="mt-4 text-center">

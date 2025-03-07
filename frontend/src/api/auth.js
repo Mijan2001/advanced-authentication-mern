@@ -41,6 +41,18 @@ export const logout = async () => {
     return response.data;
 };
 
+// ✅ New function: Check if user is authenticated
+export const isAuthenticated = async () => {
+    try {
+        const response = await axios.get(`${API_URL}/authenticated`, {
+            withCredentials: true
+        });
+        return response?.data?.user ? true : false;
+    } catch (error) {
+        return false;
+    }
+};
+
 export const forgotPassword = async email => {
     const response = await axios.post(`${API_URL}/forget-password`, {
         email

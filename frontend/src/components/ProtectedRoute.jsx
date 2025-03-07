@@ -1,46 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios'; // To make API requests
+import { isAuthenticated } from '../api/auth'; // Import the new function
 
 function ProtectedRoute({ children }) {
     const navigate = useNavigate();
-    const [isAuthenticated, setIsAuthenticated] = useState(null);
+    const [isAuth, setIsAuth] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Make an API request to check if the user is authenticated
-        const checkAuthentication = async () => {
-            try {
-                // Assuming you have a route that checks authentication
-                await axios.get(
-                    'http://localhost:8000/api/v1/users/authenticated',
-                    {
-                        withCredentials: true
-                    }
-                );
-
-                // If the request is successful, the user is authenticated
-                setIsAuthenticated(true);
-            } catch (error) {
-                // If the request fails, the user is not authenticated
-                setIsAuthenticated(false);
-            } finally {
-                setLoading(false);
-            }
+        const checkUserAuth = async () => {
+            const authStatus = await isAuthenticated();
+            setIsAuth(authStatus);
+            setLoading(false);
         };
 
-        checkAuthentication();
+        checkUserAuth();
     }, []);
 
+    useEffect(() => {
+        if (!loading && isAuth === false) {
+            navigate('/login', { replace: true });
+        }
+    }, [loading, isAuth, navigate]);
+
     if (loading) {
-        return <div>Loading...</div>; // Or a loading spinner
+        return <div>Loading...</div>; // Show a loader while checking authentication
     }
 
-    if (!isAuthenticated) {
-        return navigate('/login'); // Redirect to login if not authenticated
-    }
-
-    return children; // Render protected content if authenticated
+    return isAuth ? children : null;
 }
 
 export default ProtectedRoute;
